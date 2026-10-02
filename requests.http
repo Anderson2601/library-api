@@ -1,0 +1,111 @@
+### Colección de pruebas — requiere la extensión "REST Client" de VS Code
+### Ejecuta las peticiones en orden (clic en "Send Request").
+@base = http://localhost:3000/api/v1
+
+### 0. Health check
+GET http://localhost:3000/health
+
+### 1. Crear autor
+# @name createAuthor
+POST {{base}}/authors
+Content-Type: application/json
+
+{ "name": "Gabriel García Márquez", "nationality": "Colombiana", "birthYear": 1927 }
+
+###
+@authorId = {{createAuthor.response.body._id}}
+
+### 2. Listar autores (paginado)
+GET {{base}}/authors?page=1&limit=10
+
+### 3. Consultar autor
+GET {{base}}/authors/{{authorId}}
+
+### 4. Actualizar autor
+PUT {{base}}/authors/{{authorId}}
+Content-Type: application/json
+
+{ "nationality": "Colombiana (Nobel)" }
+
+### 5. Crear libro
+# @name createBook
+POST {{base}}/books
+Content-Type: application/json
+
+{ "title": "Cien años de soledad", "isbn": "978-0307474728", "authorId": "{{authorId}}", "year": 1967 }
+
+###
+@bookId = {{createBook.response.body._id}}
+
+### 6. Listar libros disponibles
+GET {{base}}/books?available=true
+
+### 7. Libros de un autor (extra)
+GET {{base}}/authors/{{authorId}}/books
+
+### 8. Consultar / actualizar libro
+GET {{base}}/books/{{bookId}}
+
+###
+PUT {{base}}/books/{{bookId}}
+Content-Type: application/json
+
+{ "year": 1967 }
+
+### 9. Registrar préstamo (el libro pasa a available:false)
+# @name createLoan
+POST {{base}}/loans
+Content-Type: application/json
+
+{ "bookId": "{{bookId}}", "userName": "Ana Pérez", "loanDate": "2025-05-20" }
+
+###
+@loanId = {{createLoan.response.body._id}}
+
+### 10. Repetir el préstamo del mismo libro -> 409 (no disponible)
+POST {{base}}/loans
+Content-Type: application/json
+
+{ "bookId": "{{bookId}}", "userName": "Luis Gómez", "loanDate": "2025-05-21" }
+
+### 11. Listar préstamos / activos (extra)
+GET {{base}}/loans
+
+###
+GET {{base}}/loans/active
+
+### 12. Eliminar autor con libros -> 409
+DELETE {{base}}/authors/{{authorId}}
+
+### 13. Devolver el libro (asigna returnDate y libera el libro)
+PUT {{base}}/loans/{{loanId}}
+Content-Type: application/json
+
+{ "returned": true }
+
+### 14. Errores esperados
+# 400: id inválido
+GET {{base}}/books/abc
+
+###
+# 400: campo obligatorio faltante
+POST {{base}}/authors
+Content-Type: application/json
+
+{ "name": "" }
+
+###
+# 404: autor inexistente
+POST {{base}}/books
+Content-Type: application/json
+
+{ "title": "X", "isbn": "111-222", "authorId": "000000000000000000000000" }
+
+### 15. Eliminar (en orden: préstamo -> libro -> autor)
+DELETE {{base}}/loans/{{loanId}}
+
+###
+DELETE {{base}}/books/{{bookId}}
+
+###
+DELETE {{base}}/authors/{{authorId}}
