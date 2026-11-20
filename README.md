@@ -15,6 +15,9 @@ npm run build && npm start   # producción
 ```
 
 Variables de entorno (`.env.example`): `PORT`, `NODE_ENV`, `MONGO_URI`, `MONGO_DB_NAME`.
+La base predeterminada es `biblioteca`. Al iniciar, la API crea las colecciones e índices
+necesarios: nombres de autor e ISBN únicos, búsquedas de libros por autor y de préstamos
+por libro/estado. No es necesario crear las colecciones manualmente en Atlas.
 
 ## Estructura
 
