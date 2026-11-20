@@ -13,10 +13,6 @@ const ensureIndexes = async (): Promise<void> => {
             { unique: true, name: "uq_authors_name" },
         ),
         db.collection("books").createIndex(
-            { isbn: 1 },
-            { unique: true, name: "uq_books_isbn" },
-        ),
-        db.collection("books").createIndex(
             { authorId: 1 },
             { name: "ix_books_author_id" },
         ),

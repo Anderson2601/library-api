@@ -20,7 +20,10 @@ export class BookRepository {
      * incluso si dos peticiones llegan al mismo tiempo.
      */
     async ensureIndexes(): Promise<void> {
-        await this.collection().createIndex({ isbn: 1 }, { unique: true });
+        await this.collection().createIndex(
+            { isbn: 1 },
+            { unique: true, name: "uq_books_isbn" }
+        );
     }
 
     /** Convierte los filtros del servicio en un filtro de Mongo. */
