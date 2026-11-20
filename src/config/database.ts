@@ -6,23 +6,6 @@ let client: MongoClient;
 let db: Db;
 let memoryServer: MongoMemoryServer | null = null;
 
-const ensureIndexes = async (): Promise<void> => {
-    await Promise.all([
-        db.collection("authors").createIndex(
-            { name: 1 },
-            { unique: true, name: "uq_authors_name" },
-        ),
-        db.collection("books").createIndex(
-            { authorId: 1 },
-            { name: "ix_books_author_id" },
-        ),
-        db.collection("loans").createIndex(
-            { bookId: 1, returned: 1 },
-            { name: "ix_loans_book_returned" },
-        ),
-    ]);
-};
-
 export const connectDB = async (): Promise<void> => {
     const uri = env.mongoUri;
 
@@ -30,6 +13,8 @@ export const connectDB = async (): Promise<void> => {
         client = new MongoClient(uri);
         await client.connect();
         db = client.db(env.mongoDBName);
+        console.log(`Conectado a MongoDB (db: ${env.mongoDBName})`);
+        return;
     } catch (error) {
         if (env.nodeEnv === "production") {
             throw error;
@@ -40,12 +25,8 @@ export const connectDB = async (): Promise<void> => {
         client = new MongoClient(memoryServer.getUri());
         await client.connect();
         db = client.db(env.mongoDBName);
+        console.log(`Conectado a MongoDB en memoria (db: ${env.mongoDBName})`);
     }
-
-    await ensureIndexes();
-    console.log(
-        `Conectado a MongoDB${memoryServer ? " en memoria" : ""} (db: ${env.mongoDBName})`,
-    );
 };
 
 export const getDb = (): Db => {
