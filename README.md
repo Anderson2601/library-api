@@ -15,6 +15,8 @@ npm run build && npm start   # producción
 ```
 
 Variables de entorno (`.env.example`): `PORT`, `NODE_ENV`, `MONGO_URI`, `MONGO_DB_NAME`.
+Al iniciar con las colecciones vacías, la API carga el catálogo inicial de autores y libros.
+Si se usa la base en memoria de desarrollo, ese catálogo se vuelve a cargar después de cada reinicio.
 
 ## Estructura
 

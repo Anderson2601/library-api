@@ -40,6 +40,9 @@ export class BookService {
             isbn,
             authorId,
             ...(body.year !== undefined ? { year: parseInteger(body.year, "year") } : {}),
+            ...(body.publicationLabel !== undefined
+                ? { publicationLabel: requireString(body.publicationLabel, "publicationLabel") }
+                : {}),
             available: body.available !== undefined ? parseBoolean(body.available, "available") : true,
             createdAt: now,
             updatedAt: now,
@@ -86,6 +89,9 @@ export class BookService {
             changes.authorId = authorId;
         }
         if (body.year !== undefined) changes.year = parseInteger(body.year, "year");
+        if (body.publicationLabel !== undefined) {
+            changes.publicationLabel = requireString(body.publicationLabel, "publicationLabel");
+        }
         if (body.available !== undefined) changes.available = parseBoolean(body.available, "available");
 
         if (Object.keys(changes).length === 0) {

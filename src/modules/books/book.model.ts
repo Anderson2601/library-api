@@ -7,6 +7,7 @@ export interface Book {
     isbn: string;        // único (índice único en Mongo + verificación en el servicio)
     authorId: ObjectId;  // RELACIÓN: referencia a un documento de "authors"
     year?: number;       // opcional
+    publicationLabel?: string;
     available: boolean;  // true = se puede prestar
     createdAt: Date;
     updatedAt: Date;
@@ -18,6 +19,7 @@ export interface BookDTO {
     isbn?: string;
     authorId?: string;
     year?: number;
+    publicationLabel?: string;
     available?: boolean;
 }
 
